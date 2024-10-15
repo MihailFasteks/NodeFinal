@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Управление продуктами</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">PizzaDB</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/">Главная</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/cart">Корзина</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/contact">Контакты</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/about">О нас</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Вход</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/register">Регистрация</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+  <div class="container mt-4">
+    <h3>Управление продуктами</h3>
+    
+    <% if (isAdmin) { %>
+      <form action="/products/add" method="POST" class="mb-4">
+        <div class="mb-3">
+          <label for="name" class="form-label">Название продукта</label>
+          <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="mb-3">
+          <label for="price" class="form-label">Цена</label>
+          <input type="number" step="0.01" class="form-control" id="price" name="price" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Добавить продукт</button>
+      </form>
+    <% } %>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Название</th>
+          <th>Цена</th>
+          <% if (isAdmin) { %>
+            <th>Действия</th>
+          <% } %>
+        </tr>
+      </thead>
+      <tbody>
+        <% products.forEach(function(product) { %>
+          <tr>
+            <td><%= product.id %></td>
+            <td><%= product.name %></td>
+            <td><%= product.price.toFixed(2) %> руб.</td>
+            <% if (isAdmin) { %>
+              <td>
+                <form action="/products/update" method="POST" class="d-inline">
+                  <input type="hidden" name="id" value="<%= product.id %>">
+                  <input type="text" name="name" value="<%= product.name %>" required>
+                  <input type="number" step="0.01" name="price" value="<%= product.price %>" required>
+                  <button type="submit" class="btn btn-warning">Изменить</button>
+                </form>
+                <form action="/products/delete" method="POST" class="d-inline">
+                  <input type="hidden" name="id" value="<%= product.id %>">
+                  <button type="submit" class="btn btn-danger">Удалить</button>
+                </form>
+              </td>
+            <% } %>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
