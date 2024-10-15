@@ -23,7 +23,7 @@ const productsRouter = require('./js/product');
 
 app.use('/auth', authRoutes);
 app.use('/cart', cartRoutes);
-app.use('/admin', adminRoutes);
+
 app.use('/products', productsRouter);
 // Главная страница с продуктами
 app.get('/', function(req, res) {

@@ -5,27 +5,43 @@ const config = require('./config');
 
 
 router.post('/registerPost', function(req, res) {
-  const { username, password } = req.body;
-
-  const pool = new sql.ConnectionPool(config);
-  pool.connect(function(err) {
-    if (err) {
-      console.error('Ошибка подключения к базе данных:', err);
-      return res.status(500).send('Ошибка подключения к базе данных');
-    }
-
-    const request = new sql.Request(pool);
-    request.input('username', sql.NVarChar, username);
-    request.input('password', sql.NVarChar, password);
-    request.query('INSERT INTO Users1 (username, password) VALUES (@username, @password)', function(err) {
+    const { username, password } = req.body;
+  
+    const pool = new sql.ConnectionPool(config);
+    pool.connect(function(err) {
       if (err) {
-        console.error('Ошибка выполнения запроса:', err);
-        return res.status(500).send('Ошибка выполнения запроса');
+        console.error('Ошибка подключения к базе данных:', err);
+        return res.status(500).send('Ошибка подключения к базе данных');
       }
-      res.redirect('/');
+  
+      const request = new sql.Request(pool);
+      request.input('username', sql.NVarChar, username);
+  
+      
+      request.query('SELECT * FROM Users1 WHERE username = @username', function(err, result) {
+        if (err) {
+          console.error('Ошибка выполнения запроса:', err);
+          return res.status(500).send('Ошибка выполнения запроса');
+        }
+  
+        if (result.recordset.length > 0) {
+
+          return res.status(400).send('Пользователь с таким именем уже существует');
+        } else {
+
+          request.input('password', sql.NVarChar, password);
+          request.query('INSERT INTO Users1 (username, password) VALUES (@username, @password)', function(err) {
+            if (err) {
+              console.error('Ошибка выполнения запроса:', err);
+              return res.status(500).send('Ошибка выполнения запроса');
+            }
+            res.redirect('/');
+          });
+        }
+      });
     });
   });
-});
+  
 
 
 router.post('/loginPost', function(req, res) {
@@ -70,7 +86,7 @@ router.post('/loginPost', function(req, res) {
         if (user) {
           req.session.user = user; 
           req.session.isAdmin = false; 
-          return res.redirect('/products'); 
+          return res.redirect('/'); 
         } else {
           return res.status(401).send('Неверный логин или пароль'); 
         }
