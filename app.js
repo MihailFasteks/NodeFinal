@@ -18,7 +18,7 @@ app.set('view engine', 'ejs');
 // Подключение маршрутов
 const authRoutes = require('./js/auth');
 const cartRoutes = require('./js/cart');
-const adminRoutes = require('./js/admin');
+
 const productsRouter = require('./js/product');
 
 app.use('/auth', authRoutes);
